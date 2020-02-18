@@ -109,7 +109,8 @@ class ChineseWordSegmentation:
 
 
 def main():
-    chinese_dict_path = Path('/media/bnu/data/nlp-practice/word-segmentation/综合类中文词库.xlsx')
+    nlp_path = Path('/media/bnu/data/nlp-practice')
+    chinese_dict_path = nlp_path / 'word-segmentation/综合类中文词库.xlsx'
     word_prob = {
         "北京": 0.03, "的": 0.08, "天": 0.005, "气": 0.005, "天气": 0.06, "真": 0.04, "好": 0.05, "真好": 0.04, "啊": 0.01,
         "真好啊": 0.02, "今": 0.01, "今天": 0.07, "课程": 0.06, "内容": 0.06, "有": 0.05, "很": 0.03, "很有": 0.04, "意思": 0.06,
