@@ -30,7 +30,6 @@ class SpellingCorrection:
         bigram_count (Dict): 二元计数
         channel_prob (Dict): 拼写错误概率
     """
-
     def __init__(self, vocab_path: os.PathLike, spell_error_path: os.PathLike):
         # 构建词典库
         with open(vocab_path) as f:
