@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import List, Set
 
 import jieba
+import nltk
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
@@ -21,11 +22,12 @@ class TextClassification:
 
     Args:
         data_path (Path): 语料路径
-
+        mode (str): 分类使用的包
     """
-    def __init__(self, data_path: Path):
+    def __init__(self, data_path: Path, mode='sklearn'):
         self.stop_path = data_path / 'stopwords_cn.txt'
         self.folder_path = data_path / 'SogouC' / 'Sample'
+        self.mode = mode
 
     def make_stop_set(self) -> Set[str]:
         """生成停用词表
@@ -108,7 +110,10 @@ class TextClassification:
         """
         def helper(text):
             text = set(text)
-            return [1 if word in text else 0 for word in feature_words]
+            if self.mode == 'sklearn':
+                return [1 if word in text else 0 for word in feature_words]
+            elif self.mode == 'nltk':
+                return {word: 1 if word in text else 0 for word in feature_words}
 
         train_data = [helper(text) for text in train_words_list]
         test_data = [helper(text) for text in test_words_list]
@@ -126,9 +131,15 @@ class TextClassification:
         Returns:
             test_score (float): 测试集上的准确率
         """
-        model = MultinomialNB()
-        model.fit(train_data, train_class_list)
-        test_score = model.score(test_data, test_class_list)
+        if self.mode == 'sklearn':
+            model = MultinomialNB()
+            model.fit(train_data, train_class_list)
+            test_score = model.score(test_data, test_class_list)
+        elif self.mode == 'nltk':
+            train_list = list(zip(train_data, test_class_list))
+            test_list = list(zip(test_data, test_class_list))
+            classifier = nltk.classify.NaiveBayesClassifier.train(train_list)
+            test_score = nltk.classify.accuracy(classifier, test_list)
         return test_score
 
     def run(self):
@@ -156,7 +167,7 @@ class TextClassification:
 
 def main():
     data_path = Path('/media/bnu/data/nlp-practice/text-categorization')
-    cate = TextClassification(data_path)
+    cate = TextClassification(data_path, mode='sklearn')
     cate.run()
 
 
